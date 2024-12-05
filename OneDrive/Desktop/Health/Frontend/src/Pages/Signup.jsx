@@ -4,8 +4,6 @@ import '../assets/Home.css';
 import { useNavigate } from 'react-router-dom';
 
 
-
-
 const SignUp = () => {
 
 const [Register, setRegister] = useState(false);
@@ -19,7 +17,7 @@ const handleSubmit = async (e) => {
 
         try {
             const endpoint = Register ? 'register' : 'login';
-            const response = await axios.post(`http://localhost:6001/${endpoint}`,{
+            const response = await axios.post(`http://localhost:5003/${endpoint}`,{
                 username,
                 password,
             });

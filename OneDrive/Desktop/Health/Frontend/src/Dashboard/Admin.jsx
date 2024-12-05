@@ -1,9 +1,82 @@
-import React from 'react'
+import React, { useState, useEffect }  from 'react'
 import '../assets/Admin.css'
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend, PointElement } from 'chart.js';
+
+
+
+// Register Chart.js modules
+ChartJS.register(CategoryScale, LinearScale,PointElement, LineElement, Title, Tooltip, Legend);
+
+
 
 const Admin = () => {
+  const [ProgramData, setProgramData] = useState(null);
+  const [BillingData, setBillingData] = useState(null);
+
+  useEffect (() => {
+    fetch('http://localhost:3001/Programs')
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const labels = data.map((program) => program.description);
+      const values = data.map((program) => program.value);
+
+      setProgramData({
+        labels,
+            datasets: [
+                {
+                    label: 'Program Billing',
+                    data: values, 
+                    backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1,
+                },
+            ],
+      })
+    })
+    
+ 
+.catch((error) => console.error('Error fetching data:', error));
+
+// Fetch billing data
+fetch('http://localhost:3001/Billings')
+.then((response) => {
+  if(!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return response.json();
+})
+.then((data) => {
+                const labels = data.map((billing) => billing.description);
+                const values = data.map((billing) => billing.value);
+
+                setBillingData({
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Billing Data',
+                            data: values,
+                            backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                        },
+                    ],
+                });
+})
+ .catch((error) => console.error('Error fetching billing data:', error));
+  }, []);
+
+
+
 return (
-     <div className="dashboard-container">
+
+      <div className="dashboard-container">
       
       
       <main className="main-content">
@@ -50,23 +123,42 @@ return (
 
         
         <section className="program-billing">
-          <div className="program">
-            <h3>Program</h3>
-            <div className="program-card">New Enrollments: 200</div>
-            <div className="program-card">Initial Interview & Care Plan: 180</div>
-            <div className="program-card">Devices Supplied: 150</div>
-          </div>
-          <div className="billing">
-            <h3>Billing</h3>
-            <h2>Total Revenue: Rs.1,30,78,405.36</h2>
-            <p>Avg Reimbursement:</p>
-            <ul>
-              <li>$64.02</li>
-              <li>$48.45</li>
-              <li>$86.17</li>
-            </ul>
-          </div>
-        </section>
+          <h3>Program Billing Overview</h3>
+                    {ProgramData ? (
+                        <Line
+                            data={ProgramData}
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: { display: true, position: 'top' },
+                                    title: { display: true, text: 'Program Billing Data' },
+                                },
+                                scales: { y: { beginAtZero: true } },
+                            }}
+                        />
+                    ) : (
+                        <p>Loading Program Billing Chart...</p>
+                    )}
+                  </section>
+
+           <section className="billing">
+                    <h3>Billing Overview</h3>
+                    {BillingData ? (
+                        <Line
+                            data={BillingData}
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: { display: true, position: 'top' },
+                                    title: { display: true, text: 'Billing Data' },
+                                },
+                                scales: { y: { beginAtZero: true } },
+                            }}
+                        />
+                    ) : (
+                        <p>Loading Billing Chart...</p>
+                    )}
+                </section>
 
         
         <section className="tasks">
@@ -83,3 +175,6 @@ return (
 }
 
 export default Admin
+
+
+

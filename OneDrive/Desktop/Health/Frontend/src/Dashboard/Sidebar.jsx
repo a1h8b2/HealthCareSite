@@ -1,12 +1,18 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import '../assets/sidebar.css';
+import { logo } from '../Images/Images';
 
 
 const Sidebar = () => {
   return (
     <aside className="sidebar">
-      <div className="logo">DIE <span>SOON</span></div>
+      <div className="logo">
+        <div className="image">
+<img src={logo} alt="" />
+        </div>
+        LIFE <span>LINE</span>
+        </div>
       <ul className="menu">
         <li>
           <NavLink to="/Admin" className={({ isActive }) => isActive ? 'menu-item active' : 'menu-item'}>

@@ -4,6 +4,26 @@ const cors = require('cors');
 const express = require('express');
 const bcrypt = require('bcrypt');
 const http = require('http');
+const jswt = require('jsonwebtoken');   // manage the login or user session
+const { default: mongoose } = require('mongoose');
+//connect mongoose
+mongoose.connect('mongodb://localhost:27017/Healthcare', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() =>
+    console.log("MongoDb is connecting...")
+)
+.catch(err => console.error('mongo connection error', err))
+//define Model:
+const items = new mongoose.Schema({
+    name: String,
+    password: String,
+})
+
+const Login = mongoose.model("Login", items);
+
+
+
 
 //instances create object for the event
 const app = express();
@@ -41,11 +61,16 @@ if(existingUser) {
 //hashing the password
 const hashedpassword = await bcrypt.hash(password, 10);   //Using await pauses the execution of the surrounding async function until the hashing operation is complete.
 
+const Reg = new Login({
+    username
+})
+
 //storing the user
 users.push ({username, password: hashedpassword});
 
 eventEmitter.emit('userRegistered', username);
 //sending a response
+
 res.json({message: `${username} registered successfully`});
 
 });
@@ -54,33 +79,34 @@ res.json({message: `${username} registered successfully`});
 
 
 //login
-
 app.post('/login' , async(req, res) => {
     const {username,password} = req.body;
- 
- 
- const user = users.find((user) => user.username === username);
- if(!user){
-     return res.status(400).json({message:'Invalid username or password'});
- 
- }
- 
+
+
+    const user = users.find((user) => user.username === username);
+    if(!user){
+    return res.status(400).json({message:'Invalid username or password'});
+
+}
+
 const passwordValid = await bcrypt.compare(password,user.password);
 if(!passwordValid) {
     return res.status(400).json({message:'Invalid  password'});
 }
- 
-
- 
- eventEmitter.emit('userLoggedIn', username);
- 
- res.json({message:`Welcome ${username} `});
- 
- });
 
 
 
-app.listen(6001,() => console.log('server is running'));
+eventEmitter.emit('userLoggedIn', username);
+
+res.json({message:`Welcome ${username} `});
+
+});
+
+
+
+
+
+app.listen(5003,() => console.log('server is running'));
 
 
 

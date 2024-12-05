@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Admin from './Dashboard/Admin';
 import Billing from './Dashboard/billing';
 import Patients from './Dashboard/patients';
@@ -12,31 +12,47 @@ import Schedular from './Dashboard/schedular';
 import Task from './Dashboard/task';
 import Sidebar from './Dashboard/Sidebar';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  
- <Router>
-
-    <div className="contentContainer">
-    <div className="app-container">
+const Sider = () => {
+    const Location = useLocation();
+    const Hidesider = ["/", "/Signup"];
+    return(
+<div className="contentContainer">
+        {!Hidesider.includes(Location.pathname) && (
+        <div className="app-container">
+        
         <Sidebar />
     </div>
-     <div className="main-content">
+        )}
+    
+    <div className="main-content">
             <Routes>
                 <Route path="/" element={<App />} />
-               <Route path="/Admin" element={<Admin />} />
-               <Route path="/patients" element={<Patients />} />
-               <Route path="/billing" element={<Billing />} />
-               <Route path="/Analytics" element={<Analytics />} />
-               <Route path="/schedular" element={<Schedular />} />
-               <Route path="/task" element={<Task />} />
+                <Route path="/Admin" element={<Admin />} />
+                <Route path="/patients" element={<Patients />} />
+                <Route path="/billing" element={<Billing />} />
+                <Route path="/Analytics" element={<Analytics />} />
+                <Route path="/schedular" element={<Schedular />} />
+                <Route path="/task" element={<Task />} />
 
 
             </Routes>
         </div>
     </div>
+    )
+}
 
-        </Router>
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+
+
+
+<Router>
+    
+    <Sider />
+    
+
+    </Router>
 );
 
 // If you want to start measuring performance in your app, pass a function

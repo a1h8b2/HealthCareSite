@@ -1,0 +1,2 @@
+require('./Register');
+require('./Chart');
